@@ -21,7 +21,7 @@ Recently opened projects pin to the top. Everything else is one fuzzy search awa
 ## Requirements
 
 - [`fzf`](https://github.com/junegunn/fzf) — `brew install fzf` / `apt install fzf`
-- [Claude Code](https://claude.ai/code) — `npm i -g @anthropic-ai/claude-code`
+- [Claude Code](https://claude.ai/code) — `curl -fsSL https://claude.ai/install.sh | sh`
 
 ## Install
 
