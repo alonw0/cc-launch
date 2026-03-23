@@ -46,7 +46,7 @@ fi
 all_paths=$(find "$PROJECTS_ROOT" -mindepth 1 -maxdepth "$DEPTH" -type d \
   \( -name '.*' -o -name 'node_modules' -o -name '__pycache__' -o -name '.venv' \) -prune \
   -o -type d -print \
-  | sed "s|$PROJECTS_ROOT/||")
+  | sed "s|$PROJECTS_ROOT/||" | sort)
 
 # Build picker list: recent (amber mark) at top, rest deduped below
 if [[ ${#recent[@]} -gt 0 ]]; then
@@ -90,24 +90,30 @@ while true; do
   RESUME_SESSION=false
   [[ -f "$CONFIG" ]] && source "$CONFIG"
 
+  DIM=$'\e[38;5;240m'
+  GRN=$'\e[38;5;114m'
+
   if [[ "$SKIP_PERMISSIONS" == "true" ]]; then
-    skip_label=$'\e[38;5;214m⚡ skip-perms: ON \e[0m'
+    skip_label="${AMBER}⚡ skip-perms: ON${RESET}"
   else
-    skip_label=$'\e[38;5;240mskip-perms: off\e[0m'
+    skip_label="${DIM}skip-perms: off${RESET}"
   fi
 
   if [[ "$RESUME_SESSION" == "true" ]]; then
-    resume_label=$'\e[38;5;114m↺ resume: ON \e[0m'
+    resume_label="${GRN}↺ resume: ON${RESET}"
   else
-    resume_label=$'\e[38;5;240mresume: off\e[0m'
+    resume_label="${DIM}resume: off${RESET}"
   fi
 
-  header="  ${skip_label}  $'\e[38;5;240m│\e[0m'  ${resume_label}"$'\n'$'\e[38;5;240m  ctrl-d: toggle skip-perms   ctrl-r: toggle resume\e[0m'
+  sep="${DIM}│${RESET}"
+  hint="${DIM}  ctrl-d: toggle skip-perms   ctrl-r: toggle resume   ctrl-n: new project${RESET}"
+  NL=$'\n'
+  header="  ${skip_label}  ${sep}  ${resume_label}${NL}${hint}"
 
   result=$(printf '%s\n' "$list" \
     | fzf \
         --ansi \
-        --expect='ctrl-d,ctrl-r' \
+        --expect='ctrl-d,ctrl-r,ctrl-n' \
         --header="$header" \
         --prompt="  ❯  " \
         --pointer="▶" \
@@ -116,7 +122,7 @@ while true; do
         --layout=reverse \
         --border=rounded \
         --border-label=" ✦ Claude Code ✦ " \
-        --color='bg+:#1e1b18,fg+:#f0ead6,hl:#d4a853,hl+:#d4a853,prompt:#d4a853,pointer:#d4a853,border:#4a3f35,label:#d4a853,info:#7a6a5a,separator:#2d2520' \
+        --color='fg+:#f0ead6,hl:#d4a853,hl+:#d4a853,prompt:#d4a853,pointer:#d4a853,border:#4a3f35,label:#d4a853,info:#7a6a5a,separator:#2d2520' \
         --info=inline-right \
         --preview='
           p=$(printf "%s" {} | sed "s/^.*★  //" | tr -d "\033" | sed "s/\[[0-9;]*m//g")
@@ -143,11 +149,30 @@ while true; do
     continue
   fi
 
+  if [[ "$key" == "ctrl-n" ]]; then
+    printf '\n  New project path (relative to %s): ' "$PROJECTS_ROOT" >/dev/tty
+    read -r new_project </dev/tty
+    new_project="${new_project#/}"   # strip any leading slash
+    new_project="${new_project%/}"   # strip any trailing slash
+    if [[ -z "$new_project" ]]; then
+      continue
+    fi
+    new_dir="$PROJECTS_ROOT/$new_project"
+    if [[ -d "$new_dir" ]]; then
+      printf '  ✓ Directory already exists: %s\n' "$new_project"
+    else
+      mkdir -p "$new_dir"
+      printf '  ✓ Created: %s\n' "$new_project"
+    fi
+    selected="$new_project"
+    break
+  fi
+
   [[ -z "$selected" ]] && exit 0
   break
 done
 
-# Strip ANSI codes then the recent mark
+# Strip ANSI codes then the recent mark (only needed for picker selection, not new project)
 selected=$(printf '%s' "$selected" | sed $'s/\033\\[[0-9;]*m//g')
 selected="${selected#${RECENT_MARK}}"
 
