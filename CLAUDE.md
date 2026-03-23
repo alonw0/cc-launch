@@ -51,12 +51,25 @@ Written to `~/.claude/cc-launch.conf` by the installer. Sourced by `cc-launch.sh
 ```bash
 PROJECTS_ROOT="$HOME/projects"
 DEPTH=2
+SKIP_PERMISSIONS=false
+RESUME_SESSION=false
 ```
 
 - `PROJECTS_ROOT` — root directory to search for projects
 - `DEPTH` — how many levels deep to show (1 = top-level only, 2 = one level of subdirs)
+- `SKIP_PERMISSIONS` — when `true`, launches `claude --dangerously-skip-permissions`
+- `RESUME_SESSION` — when `true`, launches `claude --continue` to resume the last conversation
 
 Directories named `.*`, `node_modules`, `__pycache__`, `.venv` are always excluded.
+
+## Picker keybinds
+
+| Key | Action |
+|-----|--------|
+| `enter` | Open selected project in Claude Code |
+| `ctrl-d` | Toggle `--dangerously-skip-permissions` (persisted to config) |
+| `ctrl-r` | Toggle `--continue` / resume last session (persisted to config) |
+| `ctrl-c` / `esc` | Exit without opening anything |
 
 ## Manifest
 

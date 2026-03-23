@@ -68,7 +68,24 @@ Edit `~/.claude/cc-launch.conf` to change settings without reinstalling:
 ```bash
 PROJECTS_ROOT="$HOME/projects"
 DEPTH=2
+SKIP_PERMISSIONS=false
 ```
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `PROJECTS_ROOT` | `~/projects` | Root directory scanned for projects |
+| `DEPTH` | `2` | Search depth (1 = top-level only, 2 = include one level of subdirs) |
+| `SKIP_PERMISSIONS` | `false` | Launch Claude with `--dangerously-skip-permissions` |
+| `RESUME_SESSION` | `false` | Resume the last conversation (`--continue`) instead of starting fresh |
+
+Both flags can be toggled live inside the picker — no need to edit the file manually:
+
+| Key | Action |
+|-----|--------|
+| `ctrl-d` | Toggle `--dangerously-skip-permissions` |
+| `ctrl-r` | Toggle `--continue` (resume last session) |
+
+The header shows the current state of both options and updates instantly.
 
 Recent project history is stored in `~/.claude/cc-launch-history`.
 
