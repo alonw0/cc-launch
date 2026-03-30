@@ -1,5 +1,9 @@
 # cc-launch
 
+<p align="center">
+  <img src="logo.png" alt="cc-launch logo" width="320" />
+</p>
+
 If you find yourself opening terminal tabs just to start a new Claude Code session — **cc-launch is for you**.
 
 Open a tab. Pick a project. Claude starts. That's it.
